@@ -10,20 +10,36 @@
 <body>
   <div class="page-shell">
     <header class="site-header">
-      <div class="brand">
-        <span class="brand-mark">DF</span>
-        <div>
-          <p class="eyebrow">Service Design / Orchestration</p>
-          <h1>Derek Farder</h1>
+      <div class="header-main">
+        <div class="brand">
+          <span class="brand-mark">DF</span>
+          <div>
+            <p class="eyebrow">Service Design / Orchestration</p>
+            <h1>Derek Farder</h1>
+          </div>
         </div>
+
+        <nav class="site-nav">
+          <a href="#about">About</a>
+          <a href="#work">Work</a>
+          <a href="#orchestration">Orchestration</a>
+          <a href="#contact">Contact</a>
+        </nav>
       </div>
 
-      <nav class="site-nav">
-        <a href="#about">About</a>
-        <a href="#work">Work</a>
-        <a href="#orchestration">Orchestration</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <section class="weather-banner" aria-live="polite" aria-label="Current Minneapolis weather">
+        <div class="weather-banner-card">
+          <p class="weather-banner-label">Right now in Minneapolis...</p>
+          <div class="weather-banner-row">
+            <div class="weather-banner-left">
+              <p class="weather-banner-temp" id="weather-temp">--°</p>
+              <p class="weather-banner-condition" id="weather-condition">Loading weather...</p>
+            </div>
+            <div class="weather-icon">☀️</div>
+          </div>
+          <p class="weather-notice" id="weather-error"></p>
+        </div>
+      </section>
     </header>
 
     <main>
@@ -127,5 +143,112 @@
       <p class="small">Built with HTML and CSS for a crisp service design portfolio.</p>
     </footer>
   </div>
+
+  <script>
+    const weatherCodes = {
+      0: 'Clear sky',
+      1: 'Mainly clear',
+      2: 'Partly cloudy',
+      3: 'Overcast',
+      45: 'Fog',
+      48: 'Depositing rime fog',
+      51: 'Light drizzle',
+      53: 'Moderate drizzle',
+      55: 'Dense drizzle',
+      56: 'Freezing drizzle',
+      57: 'Dense freezing drizzle',
+      61: 'Light rain',
+      63: 'Moderate rain',
+      65: 'Heavy rain',
+      66: 'Freezing rain',
+      67: 'Heavy freezing rain',
+      71: 'Light snow',
+      73: 'Moderate snow',
+      75: 'Heavy snow',
+      77: 'Snow grains',
+      80: 'Rain showers',
+      81: 'Moderate rain showers',
+      82: 'Violent rain showers',
+      85: 'Snow showers',
+      86: 'Heavy snow showers',
+      95: 'Thunderstorm',
+      96: 'Thunderstorm with hail',
+      99: 'Thunderstorm with heavy hail'
+    };
+
+    function weatherEmoji(code) {
+      if (code === 0) return '☀️';
+      if (code <= 3) return '⛅';
+      if ([45, 48].includes(code)) return '🌫️';
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
+      if (code >= 71 && code <= 86) return '❄️';
+      return '🌤️';
+    }
+
+    function setText(id, text) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = text;
+    }
+
+    async function fetchWeather(latitude, longitude) {
+      const errorMessage = document.getElementById('weather-error');
+      const weatherIcon = document.querySelector('.weather-icon');
+      const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America%2FChicago`;
+
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        const current = data.current_weather;
+        if (!current) {
+          throw new Error('Missing weather data');
+        }
+
+        setText('weather-temp', `${Math.round(current.temperature)}°F`);
+        setText('weather-condition', weatherCodes[current.weathercode] || 'Current conditions');
+        if (weatherIcon) weatherIcon.textContent = weatherEmoji(current.weathercode);
+        if (errorMessage) errorMessage.textContent = '';
+      } catch (error) {
+        console.error(error);
+        setText('weather-condition', 'Unable to load weather');
+        if (errorMessage) errorMessage.textContent = 'Weather data is unavailable right now.';
+      }
+    }
+
+    function showLocationFallback() {
+      const errorMessage = document.getElementById('weather-error');
+      if (errorMessage) {
+        errorMessage.textContent = 'Enable location to see weather where I am right now!';
+      }
+      setText('weather-condition', 'Location access denied');
+      setText('weather-temp', '--°F');
+    }
+
+    function loadWeather() {
+      const minneapolis = { latitude: 44.9778, longitude: -93.2650 };
+
+      if (!navigator.geolocation) {
+        fetchWeather(minneapolis.latitude, minneapolis.longitude);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        () => fetchWeather(minneapolis.latitude, minneapolis.longitude),
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            showLocationFallback();
+          } else {
+            fetchWeather(minneapolis.latitude, minneapolis.longitude);
+          }
+        },
+        { timeout: 5000 }
+      );
+    }
+
+    loadWeather();
+  </script>
 </body>
 </html>

@@ -32,8 +32,16 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  align-items: center;
-  margin-bottom: 48px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
 
@@ -87,7 +95,7 @@ body {
 .hero {
   display: grid;
   gap: 36px;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 380px);
   align-items: center;
   margin-bottom: 52px;
 }
@@ -158,8 +166,9 @@ body {
   background: rgba(20, 35, 75, 0.82);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 32px;
-  padding: 32px;
+  padding: 28px;
   min-width: 300px;
+  max-width: min(100%, 380px);
   backdrop-filter: blur(12px);
 }
 
@@ -177,7 +186,7 @@ body {
 
 .flow-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, auto));
   gap: 16px;
   align-items: center;
 }
@@ -240,6 +249,86 @@ body {
   margin: 8px 0 0;
   font-size: clamp(1.9rem, 2.8vw, 2.8rem);
   max-width: 10ch;
+}
+
+.weather-banner {
+  display: flex;
+  justify-content: flex-end;
+  align-self: flex-start;
+  margin: 0 0 8px;
+}
+
+.weather-banner-card {
+  max-width: 240px;
+  width: auto;
+  background: rgba(17, 28, 54, 0.92);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 6px 8px;
+  box-shadow: 0 8px 20px rgba(3, 8, 32, 0.10);
+}
+
+.weather-banner-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.weather-banner-label {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #90b4ff;
+}
+
+.weather-banner-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.weather-banner-temp {
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+.weather-banner-condition {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #c7d0f4;
+}
+
+.weather-banner-meta {
+  margin: 8px 0 0;
+  color: #9bb7f3;
+  font-size: 0.82rem;
+}
+
+.weather-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(78, 142, 255, 0.12);
+  color: #d1e4ff;
+  font-size: 1.25rem;
+}
+
+.weather-notice {
+  margin: 6px 0 0;
+  color: #e2a1a1;
+  font-size: 0.82rem;
+  display: block;
+}
+
+.weather-notice:empty {
+  display: none;
 }
 
 .steps-grid {
